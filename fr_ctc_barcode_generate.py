@@ -7,6 +7,7 @@ import argparse
 import segno
 import os
 import sys
+import json
 from stdnum.fr.siren import validate as siren_validate
 
 __author__ = "Alexis de Lattre <alexis.delattre@akretion.com>"
@@ -14,12 +15,7 @@ __date__ = "May 9th 2026"
 __version__ = "0.1"
 
 
-BARCODE_PREFIX = "FRCTCINVOICEME"
-TO_ESCAPE_CHARS = ["\\", ":", ";", ",", '"']
-ESCAPE_CHAR = "\\"
-BLOCK_SEP_CHAR = ";"
-KEY_VALUE_SEP_CHAR = ":"
-PREFIX_SEP_CHAR = ":"
+BARCODE_PREFIX = "FRCTC"
 ALLOWED_BTs = {
     'BT-10': 'Buyer reference',
     'BT-11': 'Project reference',
@@ -73,9 +69,20 @@ def gen_barcode(args):
 
 
 def prepare_barcode_str(data_dict):
-    data_dict_stripped = {key: val.strip() for key, val in data_dict.items() if val and val.strip() and isinstance(val, str) and key in ALLOWED_BTs}
-    for key, value in data_dict_stripped.items():
+    data_dict_stripped = {}
+    for key, value in data_dict.items():
+        if key not in ALLOWED_BTs:
+            print(f"Skipping key {key} because it is not part of the allowed keys ({', '.join(ALLOWED_BTs)})")
+            continue
+        if not isinstance(value, str):
+            print(f'Skipping key {key} because its value ({value}) is not a string')
+            continue
+        val_stripped = value.strip()
+        if not val_stripped:
+            print(f'Skipping key {key} because it has an empty value')
+            continue
         print(f"{ALLOWED_BTs[key]} ({key}): {value}")
+        data_dict_stripped[key] = val_stripped
     if 'BT-49' not in data_dict_stripped:
         raise ValueError('Missing BT-49')
     bt49 = data_dict_stripped['BT-49']
@@ -84,16 +91,9 @@ def prepare_barcode_str(data_dict):
         siren_validate(siren)
     except Exception as e:
         raise ValueError(f"For France's CTC, the buyer electronic address starts with the SIREN of the company (9 digits). But the 9 first caracters of the buyer electronic address ({siren}) is not a valid SIREN: {str(e)}")
-    data_dict_escaped = {key: mecard_format(val.strip()) for key, val in data_dict_stripped.items()}
-    barcode_end = BLOCK_SEP_CHAR.join([f"{key}{KEY_VALUE_SEP_CHAR}{val_esc}" for key, val_esc in data_dict_escaped.items()])
-    barcode_str = f"{BARCODE_PREFIX}{PREFIX_SEP_CHAR}{barcode_end}"
+    data_str = json.dumps(data_dict_stripped, separators=(',', ':'))
+    barcode_str = f"{BARCODE_PREFIX}{data_str}"
     return barcode_str
-
-
-def mecard_format(value):
-    for char in TO_ESCAPE_CHARS:
-        value = value.replace(char, ESCAPE_CHAR + char)
-    return value
 
 
 def main(args=None):
