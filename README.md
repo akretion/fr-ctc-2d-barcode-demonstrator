@@ -87,3 +87,11 @@ Small drawback: JSON has a small character overhead. This small drawback is miti
 * Exact list of the optional EN16931 fields
 * Oblige to use short keys (for example: <mark>11</mark> for <mark>BT-11</mark>) instead of a recommandation ?
 * Prefix **FRCTC**
+
+## About
+
+To know more about the motivations behind this proposal, read [this blog post](https://www.linkedin.com/pulse/ma-proposition-de-norme-qr-code-pour-le-invoicing-en-alexis-de-lattre-so8ce) (in French).
+
+## Contributors
+
+* Alexis de Lattre \<<alexis.delattre@akretion.com>\>
