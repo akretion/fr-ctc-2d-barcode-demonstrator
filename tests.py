@@ -16,7 +16,7 @@ class TestBarcode(unittest.TestCase):
             'BT-49': '448819680',
             'BT-11': 'JFE2026',
             }
-        barcode_str = '''FRCTC{"BT-49":"448819680","BT-11":"JFE2026"}'''
+        barcode_str = '''FRCTC{"49":"448819680","11":"JFE2026"}'''
         self.assertEqual(prepare_barcode_str(easy_data_dict), barcode_str)
 
     def test_generate_no_empty_value(self):
@@ -27,7 +27,7 @@ class TestBarcode(unittest.TestCase):
             'BT-13': None,
             'BT-99': 'UnallowedBT',
             }
-        barcode_str = '''FRCTC{"BT-49":"448819680","BT-11":"JFE2026"}'''
+        barcode_str = '''FRCTC{"49":"448819680","11":"JFE2026"}'''
         self.assertEqual(prepare_barcode_str(data_dict), barcode_str)
 
     def test_refuse_gen(self):
@@ -47,23 +47,32 @@ class TestBarcode(unittest.TestCase):
             'BT-12': 'AK1242',
             'BT-13': 'PO42',
             }
-        barcode_str = '''FRCTC{"BT-49":"792377731","BT-12":"AK1242","BT-13":"PO42"}'''
+        barcode_str = '''FRCTC{"49":"792377731","12":"AK1242","13":"PO42"}'''
         self.assertEqual(parse_barcode(barcode_str), res)
 
     def test_read_invalid_barcodes(self):
         invalid_barcodes = [
-            '''FRCTC{"BT-12":"AK1242","BT-13":"PO42"}''',  # missing BT-49
-            '''FRCTC{"BT-49":" ","BT-12":"AK1242","BT-12":"PO42"}''',  # empty BT-49
-            '''RCTCI{"BT-49":"792377731","BT-12":"AK1242","BT-13":"PO42"}''',  # bad prefix
-            '''FRCTC{"BT-49":"792377731","BT-42":"AK1242","BT-13":"PO42"}''',  # BT-42 unallowed
-            '''FRCTC{"BT-49":"792377731","BT-12":"AK1242","BT-13":"PO42"''',  # invalid JSON
-            '''FRCTC{"BT-49":"792377731","BT-12":"AK1242","BT-13","PO42"}''',  # invalid JSON
-            '''FRCTC{"BT-49":792377731,"BT-12":"AK1242","BT-13","PO42"}''',  # BT-49 as integer
+            '''FRCTC{"12":"AK1242","13":"PO42"}''',  # missing BT-49
+            '''FRCTC{"49":" ","12":"AK1242","13":"PO42"}''',  # empty BT-49
+            '''RCTCI{"49":"792377731","12":"AK1242","13":"PO42"}''',  # bad prefix
+            '''FRCTC{"49":"792377731","42":"AK1242","13":"PO42"}''',  # BT-42 unallowed
+            '''FRCTC{"49":"792377731","12":"AK1242","13":"PO42"''',  # invalid JSON
+            '''FRCTC{"49":"792377731","12":"AK1242","13","PO42"}''',  # invalid JSON
+            '''FRCTC{"49":792377731,"12":"AK1242","13","PO42"}''',  # BT-49 as integer
             '''FRCTC''',  # empty
             ]
         for invalid_barcode in invalid_barcodes:
             with self.assertRaises(ValueError):
                 parse_barcode(invalid_barcode)
+
+    def test_mix_shortkey_fullkey(self):
+        res = {
+            'BT-49': '792377731_MIXTURE',
+            'BT-12': 'AK1242',
+            'BT-13': 'PO42',
+            }
+        barcode_str = '''FRCTC{"49":"792377731_MIXTURE","BT-12":"AK1242","13":"PO42"}'''
+        self.assertEqual(parse_barcode(barcode_str), res)
 
     def test_unicode(self):
         in_res = {

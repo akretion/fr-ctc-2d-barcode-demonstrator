@@ -82,10 +82,14 @@ def prepare_barcode_str(data_dict):
             print(f'Skipping key {key} because it has an empty value')
             continue
         print(f"{ALLOWED_BTs[key]} ({key}): {value}")
-        data_dict_stripped[key] = val_stripped
-    if 'BT-49' not in data_dict_stripped:
+        if key.startswith('BT-'):
+            short_key = key[3:]
+        else:
+            short_key = key
+        data_dict_stripped[short_key] = val_stripped
+    if '49' not in data_dict_stripped:
         raise ValueError('Missing BT-49')
-    bt49 = data_dict_stripped['BT-49']
+    bt49 = data_dict_stripped['49']
     siren = bt49[:9]
     try:
         siren_validate(siren)

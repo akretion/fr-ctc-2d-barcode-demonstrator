@@ -54,6 +54,8 @@ def parse_barcode(barcode_str):
     res = {}
     for key, value in raw_res.items():
         if key not in ALLOWED_BTs:
+            key = f"BT-{key}"
+        if key not in ALLOWED_BTs:
             raise ValueError(f"Skipping key {key} because it is not part of the allowed keys ({', '.join(ALLOWED_BTs)})")
         if not isinstance(value, str):
             raise ValueError(f'Skipping key {key} because its value ({value}) is not a string')
