@@ -92,6 +92,8 @@ Small drawback: JSON has a small character overhead. This small drawback is miti
 
 To know more about the motivations behind this proposal, read [this blog post](https://www.linkedin.com/pulse/ma-proposition-de-norme-qr-code-pour-le-invoicing-en-alexis-de-lattre-so8ce) (in French).
 
+This idea was mentionned during the conference [Cas d'usage et normes AFNOR](https://jfe.fnfe-mpe.org/programme/69afe3b2d9ca56d6f0a800ae) at the JFE 2026 event. You can watch a [replay on YouTube](https://www.youtube.com/live/wj_OP8lgGcs?t=15312s): they talk about the topic of professionnal expenses between 4h15 and 4h25, and this idea of a QR code when mentionned at 4h18'30 ([direct link to the sequence](https://www.youtube.com/live/wj_OP8lgGcs?t=15510s)).
+
 ## Contributors
 
 * Alexis de Lattre \<<alexis.delattre@akretion.com>\>
